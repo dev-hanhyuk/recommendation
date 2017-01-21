@@ -11,11 +11,11 @@ const Similars = require('./similars');
 const Suggestions = require('./suggestions');
 const Item = require('./item');
 
-User.belongsToMany(Item, {through: Likes});
-Item.belongsToMany(User,{through: Likes} )
-User.belongsToMany(Item, {through: Dislikes});
-Item.belongsToMany(User, {through: Dislikes});
-Similars.belongsTo(User);
-Suggestions.belongsTo(User);
+User.belongsToMany(Item, {through: Likes, foreignKey: 'user'});
+Item.belongsToMany(User,{through: Likes, foreignKey: 'item'} )
+User.belongsToMany(Item, {through: Dislikes, foreignKey: 'user'});
+Item.belongsToMany(User, {through: Dislikes, foreignKey: 'item'});
+User.hasOne(Similars, {foreignKey: 'user'});
+User.hasOne(Suggestions, {foreignKey: 'user'});
 
 module.exports = { User, Likes, Dislikes, Similars, Suggestions, Item };
