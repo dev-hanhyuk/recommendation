@@ -2,6 +2,7 @@
 
 const express = require('express')
 const {resolve} = require('path')
+const bodyParser = require('body-parser');
 
 // Bones has a symlink from node_modules/APP to the root of the app.
 // That means that we can require paths relative to the app root by
@@ -19,7 +20,11 @@ if (!pkg.isProduction && !pkg.isTesting) {
 
 module.exports = app
   // Serve static files from ../public
+  .use(bodyParser.urlencoded({ extended: true }))
+  .use(bodyParser.json())
   .use(express.static(resolve(__dirname, '..', 'public')))
+
+  .use('/api', require('./api'))
 
   // Send index.html for anything else.
   .get('/*', (_, res) => res.sendFile(resolve(__dirname, '..', 'public', 'index.html')))
