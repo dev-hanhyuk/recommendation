@@ -1,7 +1,8 @@
 import React from 'react'
+import Recommendation from './Recommendation';
 
 export default () => (
   <section>
-    <p>Hello, World!</p>
+    <Recommendation />
   </section>
 )
