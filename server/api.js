@@ -30,10 +30,12 @@ api.post('/user/login', (req, res, next) => {
 api.post('/like', (req, res, next) => {
   const {item, user} = req.body;
   return e.likes.add(user, item)
-    .then(instance => {
-      console.log(instance);
-      res.send(instance)
+    .then(() => {
+      e.similars.update(user)
+      e.suggestions.update(user)
+      res.sendStatus(201)
     })
+    // .then(instance => res.send(instance))
     .catch(next)
   // return Likes.findOrCreate({ where: { user, item }})
   //   .then(() => this.engine.similars.update(user))
@@ -44,31 +46,32 @@ api.post('/like', (req, res, next) => {
 api.post('/dislike', (req, res, next) => {
   const {item, user} = req.body;
   return e.dislikes.add(user, item)
-    .then(res => console.log(res))
-    .catch(next)
+    // .then(res => console.log(res))
+    // .catch(next)
 });
 
 api.get('/recommendations/:user', (req, res, next) => {
-  Promise.all([
-    e.likes.itemsByUser(req.params.user),
-    e.dislikes.itemsByUser(req.params.user),
-    e.suggestions.update(req.params.user),
-    e.suggestions.forUser(req.params.user)
-  ])
+  let likes, dislikes, suggestions;
+  return Promise.all([ e.likes.itemsByUser(req.params.user), e.dislikes.itemsByUser(req.params.user)])
     .then(result => {
-      let likes = result[0];
-      let dislikes = result[1];
-      let suggestions = result[3].suggestions;
-
+       likes = result[0];
+       dislikes = result[1];
+       return e.suggestions.update(req.params.user)
+    })
+    .then(() => {
+      return e.suggestions.forUser(req.params.user)
+        .then(res => suggestions = res.suggestions)
+    })
+    .then(() => {
       return Item.findAll()
         .then(items => {
           let s = _.map(_.sortBy(suggestions, s => -s.weight), sg => _.find(items, i => i.id == sg.item));
-          res.send({ items, user: req.params.user, likes, dislikes, suggestions: s })
+          // res.send({ items, user: req.params.user, likes, dislikes, suggestions: s })
+          res.send({ suggestions: s})
         })
     })
     .catch(next)
 })
-
 
 
 // Send along any errors

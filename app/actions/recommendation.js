@@ -5,6 +5,7 @@ export const recommendForUser = (user) => dispatch =>
   axios.get('/api/recommendations/' + user)
     .then(res => {
       // const items = res.data.items;
+      console.log('________________:', res.data);
       const recommendations = res.data.suggestions;
       // { items, user: req.params.user, likes, dislikes, suggestions: s.slice(0, 5) }
       return dispatch({ type: RECOMMEND_FOR_USER, recommendations })

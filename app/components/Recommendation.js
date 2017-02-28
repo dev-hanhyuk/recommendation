@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import Login from './Login';
 import Items from './Items';
 
+//import Suggestions from './Suggestions;
+//<Suggestions />
+
 class Recommendation extends React.Component {
     constructor(props) {
       super(props);
@@ -12,6 +15,10 @@ class Recommendation extends React.Component {
       return (
         <section>
           <Login />
+
+
+
+
           <Items />
         </section>
       )
